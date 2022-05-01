@@ -20,14 +20,14 @@ def play_vs_computer():
                     print("-")
                 else:
                     insert_letter("O", move)
-                    print("Computer placed O at pos:", move)
+                    print("Computer placed 'O' at position:", move)
                     print_board(board)
             else:
                 print("You Win!")
                 human_score += 2
                 game_time = False
                 break
-        if is_board_full(board):
+        if is_board_full(board) and not is_winner(board, "O") and not is_winner(board, "X"):
             human_score += 1
             computer_score += 1
             print("Tie!")
@@ -217,7 +217,7 @@ def show_score2():
     score = input("Type 'ShowScore' in order to see score status\nor 'any key' to continue\n")
     if score == "ShowScore":
         print("Table Score:")
-        print("    "+str(human_score) + ":    " + str(computer_score))
+        print("    " + str(human_score) + ":    " + str(computer_score))
         print(HUMAN + " : " + COMPUTER + "\n")
     else:
         return
@@ -267,7 +267,6 @@ def handle_turn(player):
 def computer_move():
     possible_move = [x for x, letter in enumerate(board) if letter == "-" and x != "X"]
     i = 0
-
     for let in ["O", "X"]:
         for i in possible_move:
             board_copy = board[:]
@@ -276,20 +275,22 @@ def computer_move():
                 move = i
                 return move
     corner = []
-    if i in [1, 3, 7, 9]:
-        corner.append(i)
-    if len(corner) > 0:
-        move = select_random(corner)
-        return move
+    edges = []
+
     if 5 in possible_move:
         move = 5
         return move
-    edges = []
-    if i in [2, 4, 6, 8]:
+
+    if i in [4, 2, 6, 8]:
         edges.append(i)
-    if len(edges) > 0:
-        move = select_random(edges)
-        return move
+        if len(edges) > 0:
+            move = select_random(edges)
+            return move
+    if i in [1, 3, 7, 9]:
+        corner.append(i)
+        if len(corner) > 0:
+            move = select_random(corner)
+            return move
 
 
 # check if there is a free space in the board
@@ -383,4 +384,3 @@ elif int(game_option) == 2:
 
     board = ['-' for x in range(10)]
     play_vs_computer()
-
