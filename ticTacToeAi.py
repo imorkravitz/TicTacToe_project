@@ -101,8 +101,9 @@ def insert_letter(letter, position):
         board[position] = letter
         print_b(board)
         if check_for_tie():
-            print("***********************")
+            print("**************")
             print("\t Tie!")
+            print("**************")
             flag2 = True
             if int(game_option) == 1:  # player vs player
                 player1_score += 1
