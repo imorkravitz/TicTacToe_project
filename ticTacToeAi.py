@@ -1,3 +1,5 @@
+import random
+
 board = {1: ' ', 2: ' ', 3: ' ',
          4: ' ', 5: ' ', 6: ' ',
          7: ' ', 8: ' ', 9: ' '}
@@ -10,6 +12,12 @@ def print_b(board):
     print('-+-+-')
     print(board[7] + '|' + board[8] + '|' + board[9])
     print('\n')
+
+
+def select_random(position):
+    rand = len(position)
+    r = random.randrange(0, rand)
+    return position[r]
 
 
 def init_board():
@@ -36,8 +44,8 @@ def check_for_tie():
         # still available space
         if board[i] == ' ':
             return False
-        elif check_is_win():
-            return False
+        # elif check_is_win():
+        #     return False
     return True
 
 
@@ -63,33 +71,37 @@ def check_is_win():
 
 
 def check_which_pos_won(pos):
-    if board[1] == board[2] and board[1] == board[3] and board[1] != pos:
+    if board[1] == board[2] and board[1] == board[3] and board[1] == pos:
         return True
-    elif board[4] == board[5] and board[4] == board[6] and board[4] != pos:
+    elif board[4] == board[5] and board[4] == board[6] and board[4] == pos:
         return True
-    elif board[7] == board[8] and board[7] == board[9] and board[7] != pos:
+    elif board[7] == board[8] and board[7] == board[9] and board[7] == pos:
         return True
-    elif board[1] == board[4] and board[1] == board[7] and board[1] != pos:
+    elif board[1] == board[4] and board[1] == board[7] and board[1] == pos:
         return True
-    elif board[2] == board[5] and board[2] == board[8] and board[2] != pos:
+    elif board[2] == board[5] and board[2] == board[8] and board[2] == pos:
         return True
-    elif board[3] == board[6] and board[3] == board[9] and board[3] != pos:
+    elif board[3] == board[6] and board[3] == board[9] and board[3] == pos:
         return True
-    elif board[1] == board[5] and board[1] == board[9] and board[1] != pos:
+    elif board[1] == board[5] and board[1] == board[9] and board[1] == pos:
         return True
-    elif board[7] == board[5] and board[7] == board[3] and board[7] != pos:
+    elif board[7] == board[5] and board[7] == board[3] and board[7] == pos:
         return True
     else:
         return False
 
 
+flag2 = False
+
+
 def insert_letter(letter, position):
-    global player1_score, player2_score, computer_score, flag, human_score
+    global player1_score, player2_score, computer_score, flag, human_score, flag2, flag3
     if space_is_free(position):
         board[position] = letter
         print_b(board)
         if check_for_tie():
             print("Tie!")
+            flag2 = True
             if int(game_option) == 1:
                 player1_score += 1
                 player2_score += 1
@@ -98,6 +110,7 @@ def insert_letter(letter, position):
                 human_score += 1
             flag = False
             init_board()
+            flag3 = True
 
         elif check_is_win():
             if letter == 'X':
@@ -152,29 +165,39 @@ def player2_move():
     return
 
 
+flag3 = True
+
+
 def computer_move():
     best_score = -1000
     best_move = 0
+    global flag3
 
-    for i in board.keys():
-        if board[i] == ' ':
-            board[i] = computer
-            score = minimax(board, 0, False)
-            board[i] = ' '
-            if score > best_score:
-                best_score = score
-                best_move = i
-    insert_letter(computer, best_move)
+    if flag3:
+        x = random.randint(1, 9)
+        insert_letter(computer, x)
+        flag3 = False
+    else:
+        for i in board.keys():
+            if board[i] == ' ':
+                board[i] = computer
+                score = minimax(board, 0, False)
+                board[i] = ' '
+                if score > best_score:
+                    best_score = score
+                    best_move = i
+        insert_letter(computer, best_move)
     return
 
 
 def minimax(board, depth, isMaximzing):
     if check_which_pos_won(computer):
         return 100
-    elif check_which_pos_won(player1):
+    elif check_which_pos_won(human):
         return -100
     elif check_for_tie():
         return 0
+
     if isMaximzing:  # higher score
         best_score = -1000
         for i in board.keys():
@@ -187,13 +210,13 @@ def minimax(board, depth, isMaximzing):
         return best_score
 
     else:  # lower score
-        best_score = -1000
+        best_score = 800
         for i in board.keys():
             if board[i] == ' ':
-                board[i] = computer
+                board[i] = human
                 score = minimax(board, 0, True)
                 board[i] = ' '
-                if score > best_score:
+                if score < best_score:
                     best_score = score
         return best_score
 
@@ -237,7 +260,10 @@ def play_game1():
 
 
 def play_game2():
+    global flag2, flag
     while not check_is_win():
+        if flag2:
+            flag = True
         computer_move()
         if flag is not False:
             human_move()
@@ -260,12 +286,11 @@ if int(game_option) == 1:
         if choice == 'y' or choice == 'Y':
             flag = True
             init_board()
-            check_is_win() == False
 
         elif choice == "n" or choice == "N":
             game_time = False
             print("Game Over!")
-            break
+            exit()
     print("Bye Bye")
 
 if int(game_option) == 2:
@@ -279,13 +304,10 @@ if int(game_option) == 2:
         if choice == 'y' or choice == 'Y':
             flag = True
             init_board()
-            check_is_win() == False
+            flag3 = True
 
         elif choice == "n" or choice == "N":
             game_time = False
             print("Game Over!")
-            break
+            exit()
     print("Bye Bye")
-
-
-
